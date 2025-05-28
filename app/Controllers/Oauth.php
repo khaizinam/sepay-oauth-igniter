@@ -37,7 +37,7 @@ class Oauth extends BaseController
                 'state' => $state,
                 'access_token' => $data['access_token'],
                 'refresh_token' => $data['refresh_token'],
-                'expires_in' => $data['expires_in'],
+                'expires_in' => app_create_expires_in($data['expires_in']),
             ]);
             return redirect()->to(base_url('oauth/callback-success'));
         } catch (\Throwable $th) {

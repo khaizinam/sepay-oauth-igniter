@@ -21,3 +21,11 @@ if(!function_exists('blank')){
         return empty($value);
     }
 }
+
+if(!function_exists('app_create_expires_in')){
+    function app_create_expires_in($value){
+        if (is_numeric($value)) {
+            return date('Y-m-d H:i:s', time() + $value);
+        }
+    }
+}
