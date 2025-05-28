@@ -6,11 +6,15 @@ class Home extends BaseController
 {
     public function index()
     {
-        try {
-            return view('welcome_message');
+        return view('templates/header') .
+            view('pages/index') .
+            view('templates/footer');
+    }
 
-        } catch (\Throwable $th) {
-            return $th->getMessage();
-        }
+    public function success()
+    {
+        return view('templates/header') .
+            view('pages/oauth/call-back-success') .
+            view('templates/footer');
     }
 }

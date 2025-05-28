@@ -1,8 +1,6 @@
 <?php
 
-use CodeIgniter\Router\RouteCollection;
-
-/**
- * @var RouteCollection $routes
- */
 $routes->get('/', 'Home::index');
+
+$routes->get('/oath/callback', 'Oauth::callback');
+$routes->get('/oath/callback-success', 'Oauth::success');
