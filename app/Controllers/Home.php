@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\OauthModel;
+use App\Services\SePayService;
 
 class Home extends BaseController
 {
@@ -65,6 +66,19 @@ class Home extends BaseController
             return redirect()->back()->with('success', 'Setting updated successfully');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function bankAccountPage()
+    {
+        try {
+            $sePayService = new SePayService();
+            $banks = $sePayService->getBanks();        
+            return view('templates/header') .
+                view('pages/bank-account', ['banks'=> $banks]) .
+                view('templates/footer');
+        } catch (\Throwable $th) {
+            return $th->getMessage();
         }
     }
 }

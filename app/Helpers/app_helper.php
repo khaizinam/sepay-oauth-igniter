@@ -57,18 +57,14 @@ if(!function_exists('sepay_refresh_access_token')){
 }
 
 if(!function_exists('sepay_get_access_token')){
-    function sepay_get_access_token(){
+    function sepay_get_access_token($setting){
         try {
-            $model = new OauthModel();
-            $setting = $model->where('key', 'se-pay')->first();
-            if (blank($setting)) {
-                return null;
-            }
             if (strtotime($setting['expires_in']) < time()) {
                 $newToken = sepay_refresh_access_token($setting);
-                if (blank($newToken)) {
+                if (blank($newToken) || !blank($newToken['error'] ?? null)) {
                     return null;
                 }
+                $model = new OauthModel();
                 $model->update($setting['id'], [
                     'access_token' => $newToken['access_token'],
                     'refresh_token' => $newToken['refresh_token'],
