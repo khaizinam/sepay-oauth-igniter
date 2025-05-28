@@ -9,5 +9,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <title>Bảng điều khiển</title>
     <link rel="stylesheet" href="<?= base_url('public/assets/build/css/app.css') ?>">
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            background-color: #343a40;
+            padding-top: 1rem;
+        }
+        .sidebar a {
+            color: #fff;
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .content {
+            margin-left: 220px;
+            padding: 2rem;
+        }
+    </style>
 </head>
 <body>
+    <div class="sidebar">
+        <h5 class="text-white text-center">Menu</h5>
+        <a href="/">Dashboard</a>
+        <a href="<?= base_url('setting') ?>">Setting</a>
+        <a href="<?= base_url('connect') ?>">Connect</a>
+        <a href="<?= base_url('histories') ?>">Histories</a>
+    </div>

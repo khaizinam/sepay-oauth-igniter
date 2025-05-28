@@ -1,5 +1,7 @@
-<div class="container py-4">
-    <button id="connectBtn" type="button" class="btn btn-primary">Connect</button>
+<div class="content">
+    <div class="container py-4">
+        <button id="connectBtn" type="button" class="btn btn-primary">Connect</button>
+    </div>
 </div>
 
 <script>

@@ -40,6 +40,11 @@ class AddTableSetting extends Migration
                 'constraint' => 196,
                 'null' => false,
             ],
+             'key' => [
+                'type' => 'VARCHAR',
+                'constraint' => 196,
+                'null' => false,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
