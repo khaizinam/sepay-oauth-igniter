@@ -14,15 +14,15 @@
 # ENVIRONMENT
 #--------------------------------------------------------------------
 
-# CI_ENVIRONMENT = production
+CI_ENVIRONMENT = production
 
 #--------------------------------------------------------------------
 # APP
 #--------------------------------------------------------------------
 
-# app.baseURL = ''
+app.baseURL = 'https://oauth.igniter.code'
 # If you have trouble with `.`, you could also use `_`.
-# app_baseURL = ''
+app_baseURL = 'https://oauth.igniter.code'
 # app.forceGlobalSecureRequests = false
 # app.CSPEnabled = false
 
@@ -30,13 +30,13 @@
 # DATABASE
 #--------------------------------------------------------------------
 
-# database.default.hostname = localhost
-# database.default.database = ci4
-# database.default.username = root
-# database.default.password = root
-# database.default.DBDriver = MySQLi
-# database.default.DBPrefix =
-# database.default.port = 3306
+database.default.hostname = "15.235.187.19"
+database.default.database = "dev_oauth2"
+database.default.username = "dev_khaizinam"
+database.default.password = "It@@246357"
+database.default.DBDriver = MySQLi
+database.default.DBPrefix =
+database.default.port = 3306
 
 # database.tests.hostname = localhost
 # database.tests.database = ci4_test

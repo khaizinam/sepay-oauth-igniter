@@ -4,8 +4,13 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index(): string
+    public function index()
     {
-        return view('welcome_message');
+        try {
+            return view('welcome_message');
+
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
     }
 }
