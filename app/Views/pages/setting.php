@@ -15,6 +15,10 @@
                 <input type="text" class="form-control" id="client_id" name="client_id" value="<?= esc($setting['client_id']) ?>" required>
             </div>
             <div class="mb-3">
+                <label for="client_secret" class="form-label">Client Secret</label>
+                <input type="text" class="form-control" id="client_secret" name="client_secret" value="<?= esc($setting['client_secret']) ?>" required>
+            </div>
+            <div class="mb-3">
                 <label for="redirect_uri" class="form-label">Redirect Uri</label>
                 <input type="text" class="form-control" id="redirect_uri" name="redirect_uri" value="<?= esc($setting['redirect_uri']) ?>" required>
             </div>

@@ -58,7 +58,8 @@ class Home extends BaseController
                 'description' => $postData['description'],
                 'client_id' => $postData['client_id'],
                 'redirect_uri' => $postData['redirect_uri'],
-                'state' => $postData['state']
+                'state' => $postData['state'],
+                'client_secret' => $postData['client_secret'],
             ];
             $model->update($setting['id'], $data);
             return redirect()->back()->with('success', 'Setting updated successfully');

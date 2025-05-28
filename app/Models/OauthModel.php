@@ -13,9 +13,11 @@ class OauthModel extends Model {
         'description',
         'code',
         'client_id',
+        'client_secret',
         'redirect_uri',
         'state',
-        'key'
+        'key',
+        'access_token'
     ];
 
     protected $useTimestamps = true;

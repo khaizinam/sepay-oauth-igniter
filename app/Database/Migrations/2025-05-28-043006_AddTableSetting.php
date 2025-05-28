@@ -40,10 +40,22 @@ class AddTableSetting extends Migration
                 'constraint' => 196,
                 'null' => false,
             ],
-             'key' => [
+            'key' => [
                 'type' => 'VARCHAR',
                 'constraint' => 196,
                 'null' => false,
+            ],
+            'access_token' => [
+                'type' => 'TINYTEXT',
+                'null' => true,
+            ],
+            'code' => [
+                'type' => 'TINYTEXT',
+                'null' => true,
+            ],
+            'client_secret' => [
+                'type' => 'TINYTEXT',
+                'null' => true,
             ],
             'created_at' => [
                 'type' => 'DATETIME',

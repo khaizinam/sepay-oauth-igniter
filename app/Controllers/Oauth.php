@@ -16,6 +16,21 @@ class Oauth extends BaseController
             if (blank($setting)) {
                 throw new Exception('Setting not found');
             }
+
+            helper('url');
+            $client = \Config\Services::curlrequest();
+            $response = $client->request('post', 'https://my.sepay.vn/oauth/token', [
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                ],
+                'form_params' => [
+                    'grant_type'    => 'authorization_code',
+                    'code'          => $code,
+                    'redirect_uri'  => $setting['redirect_uri'],
+                    'client_id'     => $setting['client_id'],
+                    'client_secret' => $setting['client_secret'],
+                ]
+            ]);
             $model->update($setting['id'], [
                 'code' => $code,
                 'state' => $state
