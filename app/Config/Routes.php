@@ -2,5 +2,5 @@
 
 $routes->get('/', 'Home::index');
 
-$routes->get('/oath/callback', 'Oauth::callback');
-$routes->get('/oath/callback-success', 'Oauth::success');
+$routes->get('/oauth/callback', 'Oauth::callback');
+$routes->get('/oauth/callback-success', 'Oauth::success');
