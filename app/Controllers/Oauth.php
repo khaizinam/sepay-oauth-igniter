@@ -32,7 +32,7 @@ class Oauth extends BaseController
             ]);
             $body = $response->getBody();
             $data = json_decode($body, true);
-            dd($data);
+            log_message('error', $data);
             $model->update($setting['id'], [
                 'code' => $code,
                 'state' => $state,
