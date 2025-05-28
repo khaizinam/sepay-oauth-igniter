@@ -17,7 +17,9 @@ class OauthModel extends Model {
         'redirect_uri',
         'state',
         'key',
-        'access_token'
+        'access_token',
+        'refresh_token',
+        'expires_in',
     ];
 
     protected $useTimestamps = true;

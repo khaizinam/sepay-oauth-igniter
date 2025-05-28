@@ -16,7 +16,6 @@ class Oauth extends BaseController
             if (blank($setting)) {
                 throw new Exception('Setting not found');
             }
-
             helper('url');
             $client = \Config\Services::curlrequest();
             $response = $client->request('post', 'https://my.sepay.vn/oauth/token', [
@@ -31,9 +30,14 @@ class Oauth extends BaseController
                     'client_secret' => $setting['client_secret'],
                 ]
             ]);
+            $body = $response->getBody();
+            $data = json_decode($body, true);
             $model->update($setting['id'], [
                 'code' => $code,
-                'state' => $state
+                'state' => $state,
+                'access_token' => $data['access_token'],
+                'refresh_token' => $data['refresh_token'],
+                'expires_in' => $data['expires_in'],
             ]);
             return redirect()->to(base_url('oauth/callback-success'));
         } catch (\Throwable $th) {

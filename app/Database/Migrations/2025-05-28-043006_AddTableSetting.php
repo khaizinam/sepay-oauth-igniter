@@ -57,6 +57,15 @@ class AddTableSetting extends Migration
                 'type' => 'TINYTEXT',
                 'null' => true,
             ],
+            'refresh_token' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ],
+            'expires_in' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
