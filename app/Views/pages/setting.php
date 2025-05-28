@@ -23,7 +23,33 @@
                 <input type="text" class="form-control" id="state" name="state" value="<?= esc($setting['state']) ?>" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-success">Save</button>
+            <button id="connectBtn" type="button" class="btn btn-primary" <?= empty($setting['client_id']) ? 'disabled' : '' ?>>
+                Connect
+            </button>
         </form>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#connectBtn').on('click', function(e) {
+            e.preventDefault();
+            let url = 'https://my.sepay.vn/oauth/authorize';
+            url += '?response_type=code';
+            url += '&client_id=<?= esc($setting['client_id']) ?>';
+            url += '&redirect_uri=<?= esc($setting['redirect_uri']) ?>';
+            url += '&state=<?= esc($setting['state']) ?>';
+
+            const popupWidth = 400;
+            const popupHeight = 500;
+            const left = (screen.width / 2) - (popupWidth / 2);
+            const top = (screen.height / 2) - (popupHeight / 2);
+            window.open(
+                url,
+                'OAuthLogin',
+                `width=${popupWidth},height=${popupHeight},top=${top},left=${left},resizable=yes,scrollbars=yes`
+            );
+        });
+    });
+</script>
