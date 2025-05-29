@@ -29,12 +29,12 @@ class SePayService
                     'client_secret'     => $setting['client_secret'],
                 ]
             ]);
-            $body = $response->getBody();
-            log_message('info', __CLASS__ . '@' . __FUNCTION__ . ' response: ' . $body);
-            return json_decode($body, true);
+            $data = json_decode($response->getBody(), true);
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' response: ' .json_encode($data, true));
+            return $data;
         } catch (\Throwable $th) {
-            log_message('error',__CLASS__. '@' . __FUNCTION__, (array)$th->getMessage());
-            log_message('error',__CLASS__. '@' . __FUNCTION__, (array)$th->getTraceAsString());
+            log_message('error',__CLASS__. '@' . __FUNCTION__ . ' : '. $th->getMessage());
+            log_message('error',__CLASS__. '@' . __FUNCTION__ . ' : ' . $th->getTraceAsString());
             return null;
         }
     }
@@ -42,8 +42,10 @@ class SePayService
     public function getAccessToken($setting)
     {
         try {
+            log_message('error',__CLASS__. '@' . __FUNCTION__ . ' : START');
             if (strtotime($setting['expires_in']) < time()) {
                 $newToken = $this->refreshToken($setting);
+                log_message('error',__CLASS__. '@' . __FUNCTION__ . '@newToken: ' . json_encode($newToken,true));
                 if (blank($newToken) || !blank($newToken['error'] ?? null)) {
                     return null;
                 }
@@ -65,9 +67,8 @@ class SePayService
     private function getAuthorizationHeader($setting)
     {
         $accessToken = $this->getAccessToken($setting);
-        return [
-            'Authorization' => 'Bearer ' . $accessToken,
-        ];
+        log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' accessToken: ' . $accessToken);
+        return 'Bearer ' . $accessToken;
     }
 
     public function getBanks()
@@ -75,17 +76,18 @@ class SePayService
         try {
             $setting = $this->model->where('key', 'se-pay')->first();
             $response = $this->client->request('get', $this->endpoint . 'api/v1/bank-accounts', [
-                'headers' => $this->getAuthorizationHeader($setting)
+                'headers' => [
+                    'Authorization' => $this->getAuthorizationHeader($setting)
+                ]
             ]);
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' response: ' . $response->getBody());
             $data = json_decode($response->getBody(), true);
             if($data['status'] !== 'success') {
                 return null;
             }
             return $data['data'] ?? null;
         } catch (\Throwable $th) {
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . $th->getMessage());
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . $th->getTraceAsString());
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getMessage());
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getTraceAsString());
             return null;
         }
     }
