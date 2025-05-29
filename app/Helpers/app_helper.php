@@ -47,6 +47,7 @@ if(!function_exists('sepay_refresh_access_token')){
                 ]
             ]);
             $body = $response->getBody();
+            log_message('info', __CLASS__ . '@' . __FUNCTION__ . ' response: ' . $body);
             return json_decode($body, true);
         } catch (\Throwable $th) {
             log_message('error',__CLASS__. '@' . __FUNCTION__, (array)$th->getMessage());

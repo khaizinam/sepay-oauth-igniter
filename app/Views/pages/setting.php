@@ -26,7 +26,14 @@
                 <label for="state" class="form-label">State</label>
                 <input type="text" class="form-control" id="state" name="state" value="<?= esc($setting['state']) ?>" required>
             </div>
-
+            <div class="mb-3">
+                <label for="state" class="form-label">Access Token</label>
+                <textarea type="textarea" rows="12" class="form-control" disabled><?= esc($setting['access_token']) ?></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="state" class="form-label">Refresh Token</label>
+                <textarea type="textarea" rows="12" class="form-control" disabled><?= esc($setting['refresh_token']) ?></textarea>
+            </div>
             <button type="submit" class="btn btn-success">Save</button>
             <button id="connectBtn" type="button" class="btn btn-primary" <?= empty($setting['client_id']) ? 'disabled' : '' ?>>
                 Connect
@@ -43,6 +50,7 @@
             url += '?response_type=code';
             url += '&client_id=<?= esc($setting['client_id']) ?>';
             url += '&redirect_uri=<?= esc($setting['redirect_uri']) ?>';
+            url += '&scope=bank-account:read transaction:read webhook:read webhook:write webhook:delete profile company';
             url += '&state=<?= esc($setting['state']) ?>';
 
             const popupWidth = 400;

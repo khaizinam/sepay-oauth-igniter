@@ -7,6 +7,13 @@ use App\Services\SePayService;
 
 class Home extends BaseController
 {
+    protected SePayService $sePayService;
+
+    public function __construct()
+    {
+        $this->sePayService = new SePayService();
+    }
+
     public function index()
     {
         return view('templates/header') .
@@ -23,20 +30,7 @@ class Home extends BaseController
 
     public function settingPage(){
         try {
-            $model = new OauthModel();
-            $setting = $model->where('key', 'se-pay')->first();
-            if (blank($setting)) {
-                $settingData = [
-                    'key'   => 'se-pay',
-                    'name' => 'Tích hợp SePay',
-                    'description' => 'Tích hợp SePay',
-                    'client_id' => '',
-                    'state' => 'RANDOM_STATE_VALUE',
-                    'redirect_uri' => base_url('oauth/callback')
-                ];
-                $model->insert($settingData);
-                $setting = $model->where('key', 'se-pay')->first();
-            }
+            $setting = $this->sePayService->getSetting();
             return view('templates/header') .
                 view('pages/setting', ['setting' => $setting]) .
                 view('templates/footer');
@@ -73,9 +67,10 @@ class Home extends BaseController
     {
         try {
             $sePayService = new SePayService();
-            $banks = $sePayService->getBanks();        
+            $banks = $sePayService->getBanks();
+            $setting = $sePayService->getSetting();
             return view('templates/header') .
-                view('pages/bank-account', ['banks'=> $banks]) .
+                view('pages/bank-account', ['banks'=> $banks, 'setting' => $setting]) .
                 view('templates/footer');
         } catch (\Throwable $th) {
             return $th->getMessage();
