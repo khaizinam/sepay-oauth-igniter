@@ -75,15 +75,13 @@ class SePayService
     {
         try {
             $setting = $this->model->where('key', 'se-pay')->first();
-            $response = $this->client->request('get', $this->endpoint . 'api/v1/bank-accounts', [
+            $client = \Config\Services::curlrequest();
+            $response = $client->request('get', 'https://my.sepay.vn/api/v1/bank-accounts', [
                 'headers' => [
-                    'Authorization' => $this->getAuthorizationHeader($setting)
+                    'Authorization' => 'Bearer ' . sepay_get_access_token($setting),
                 ]
             ]);
             $data = json_decode($response->getBody(), true);
-            if($data['status'] !== 'success') {
-                return null;
-            }
             return $data['data'] ?? null;
         } catch (\Throwable $th) {
             log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getMessage());
