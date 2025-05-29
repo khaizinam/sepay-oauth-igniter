@@ -18,7 +18,7 @@ class SePayService
 
     public function refreshToken($setting){
         try {
-            $response = $this->client->request('post', $this->endpoint . 'oauth/token', [
+            $response = $this->client->request('POST', $this->endpoint . 'oauth/token', [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
                 ],
@@ -30,7 +30,6 @@ class SePayService
                 ]
             ]);
             $data = json_decode($response->getBody(), true);
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' response: ' .json_encode($data, true));
             return $data;
         } catch (\Throwable $th) {
             log_message('error',__CLASS__. '@' . __FUNCTION__ . ' : '. $th->getMessage());
@@ -45,7 +44,6 @@ class SePayService
             log_message('error',__CLASS__. '@' . __FUNCTION__ . ' : START');
             if (strtotime($setting['expires_in']) < time()) {
                 $newToken = $this->refreshToken($setting);
-                log_message('error',__CLASS__. '@' . __FUNCTION__ . '@newToken: ' . json_encode($newToken,true));
                 if (blank($newToken) || !blank($newToken['error'] ?? null)) {
                     return null;
                 }
@@ -67,7 +65,6 @@ class SePayService
     private function getAuthorizationHeader($setting)
     {
         $accessToken = $this->getAccessToken($setting);
-        log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' accessToken: ' . $accessToken);
         return 'Bearer ' . $accessToken;
     }
 
@@ -75,10 +72,9 @@ class SePayService
     {
         try {
             $setting = $this->model->where('key', 'se-pay')->first();
-            $client = \Config\Services::curlrequest();
-            $response = $client->request('get', 'https://my.sepay.vn/api/v1/bank-accounts', [
+            $response = $this->client->request('GET', $this->endpoint . 'api/v1/bank-accounts', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . sepay_get_access_token($setting),
+                    'Authorization' => $this->getAuthorizationHeader($setting)
                 ]
             ]);
             $data = json_decode($response->getBody(), true);
