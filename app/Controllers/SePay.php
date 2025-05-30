@@ -22,17 +22,13 @@ class SePay extends BaseController
             if($this->request->isAJAX() == false || $this->request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
                 throw new Exception('This method only supports AJAX requests');
             }
-            $setting = $this->sePayService->getSetting();
-            $client = \Config\Services::curlrequest();
-            $response = $client->request('get', $this->endpoint . 'api/v1/bank-accounts/' . $bank_id, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . sepay_get_access_token($setting),
-                ]
-            ]);
-            $body = $response->getBody();
-            log_message('info',__CLASS__ . '@' . __FUNCTION__.'response: ' . $body);
-            $data = json_decode($body, true);
             $data = $this->sePayService->getBankDetail($bank_id);
+            if(blank($data['data'] ?? null)) {
+                throw new Exception('No bank details found for the provided bank ID');
+            }
+            $html = view('partials/bank-account', [
+                'bank' => $data['data'],
+            ]);
             return $this->response->setJSON([
                 'error' => false,
                 'message' => 'Bank details retrieved successfully',
@@ -46,6 +42,57 @@ class SePay extends BaseController
                 'message' => $th->getMessage(),
                 'csrf_hash' => csrf_hash()
             ]);
+        }
+    }
+
+    /**
+     * Get sub-account details for a specific bank account.
+     *
+     * @param int $bank_id The ID of the bank account.
+     * @return \CodeIgniter\HTTP\Response
+     */
+    public function getSubAccount($bank_id)
+    {
+        try {
+            if($this->request->isAJAX() == false || $this->request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
+                throw new Exception('This method only supports AJAX requests');
+            }
+            $data = $this->sePayService->getSubAccount($bank_id);
+            if(blank($data ?? null)) {
+                throw new Exception('No bank details found for the provided bank ID');
+            }
+            $html = view('partials/bank-account', [
+                'va_accounts' => $data
+            ]);
+            return $this->response->setJSON([
+                'error' => false,
+                'message' => 'Sub-account details retrieved successfully',
+                'data' => $html,
+                'csrf_hash' => csrf_hash()
+            ]);
+        } catch (\Throwable $th) {
+            log_message('error',__CLASS__ . '@' . __FUNCTION__, ['error' => $th->getMessage(), 'trace' => $th->getTraceAsString()]);
+            return $this->response->setStatusCode(500)->setJSON([
+                'error' => true,
+                'message' => $th->getMessage(),
+                'csrf_hash' => csrf_hash()
+            ]);
+        }
+    }
+
+    public function updateBankAcount()
+    {
+        try {
+            $data = $this->request->getPost();
+            if(empty($data['bank_account_id']) || empty($data['va_account_id'])) {
+                throw new Exception('Bank account ID and VA account ID are required');
+            }
+            $result = $this->sePayService->updateBankAccount($data);
+            return redirect()->back()->with('success', 'Bank account updated successfully');
+        } catch (\Throwable $th) {
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getMessage());
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getTraceAsString());
+            return redirect()->back()->with('success', 'Failed to update bank account.');
         }
     }
 }

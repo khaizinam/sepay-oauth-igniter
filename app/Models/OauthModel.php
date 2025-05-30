@@ -20,6 +20,7 @@ class OauthModel extends Model {
         'access_token',
         'refresh_token',
         'expires_in',
+        'rawdata'
     ];
 
     protected $useTimestamps = true;

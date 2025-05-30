@@ -101,28 +101,49 @@ class SePayService
             $this->model->insert($settingData);
             $setting = $this->model->where('key', 'se-pay')->first();
         }
+        $setting['rawdata'] = json_decode(app_get_data($setting, 'rawdata', '{}'), true);
+        $setting['va_account_id'] = app_get_data($setting, 'rawdata.bank_setting.va_account_id');
+        $setting['bank_account_id'] = app_get_data($setting, 'rawdata.bank_setting.bank_account_id');
         return $setting;
     }
 
     public function getBankDetail($bank_id)
     {
-        try {
-            $setting = $this->getSetting();
-            if (blank($setting)) {
-                return null;
-            }
-            $client = \Config\Services::curlrequest();
-            $response = $client->request('get',  $this->endpoint . 'api/v1/bank-accounts/' . $bank_id, [
-                'headers' => $this->getAuthorizationHeader($setting)
-            ]);
+        $setting = $this->getSetting();
+        $response = $this->client->request('GET',  $this->endpoint . 'api/v1/bank-accounts/' . $bank_id, [
+            'headers' => [
+                'Authorization' => $this->getAuthorizationHeader($setting)
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        return $data;
+    }
 
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' response: ' . $response->getBody());
-            $data = json_decode($response->getBody(), true);
-            return $data;
-        } catch (\Throwable $th) {
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . $th->getMessage());
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . $th->getTraceAsString());
-            return null;
-        }
+    public function getSubAccount($bank_id)
+    {
+        $setting = $this->getSetting();
+        $response = $this->client->request('GET',  $this->endpoint . 'api/v1/bank-accounts/' . $bank_id . '/sub-accounts', [
+            'headers' => [
+                'Authorization' => $this->getAuthorizationHeader($setting)
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        return app_get_data($data, 'data', []);
+    }
+
+    public function updateBankAccount($data)
+    {
+        log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' START');
+        $setting = $this->getSetting();
+        $rawdata = $setting['rawdata'] ?? [];
+        log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' rawdata : ' . json_encode($data, true));
+        $rawdata['bank_setting']= [
+            'bank_account_id' => app_get_data($data, 'bank_account_id', ''),
+            'va_account_id' => app_get_data($data, 'va_account_id', ''),
+        ];
+        $result = $this->model->update($setting['id'], [
+            'rawdata' => json_encode($rawdata, true),
+        ]);
+        return $result;
     }
 }

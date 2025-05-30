@@ -81,3 +81,31 @@ if(!function_exists('sepay_get_access_token')){
         }
     }
 }
+
+if (!function_exists('app_get_data')) {
+    function app_get_data($data, $key, $default = null) {
+        if (!is_array($data) && !is_object($data)) {
+            return $default;
+        }
+
+        $keys = explode('.', $key);
+
+        foreach ($keys as $segment) {
+            if (is_array($data)) {
+                if (!array_key_exists($segment, $data)) {
+                    return $default;
+                }
+                $data = $data[$segment];
+            } elseif (is_object($data)) {
+                if (!isset($data->{$segment})) {
+                    return $default;
+                }
+                $data = $data->{$segment};
+            } else {
+                return $default;
+            }
+        }
+
+        return $data;
+    }
+}

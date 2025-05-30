@@ -41,7 +41,7 @@
     <div class="sidebar">
         <h5 class="text-white text-center">Menu</h5>
         <a href="/">Dashboard</a>
-        <a href="<?= base_url('setting') ?>">Setting</a>
+        <a href="<?= base_url('setting') ?>">Access token</a>
         <a href="<?= base_url('bank-account') ?>">Bank accounts</a>
         <a href="<?= base_url('histories') ?>">Histories</a>
     </div>

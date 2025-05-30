@@ -66,12 +66,21 @@ class Home extends BaseController
     public function bankAccountPage()
     {
         try {
-            $sePayService = new SePayService();
-            $banks = $sePayService->getBanks();
-            $setting = $sePayService->getSetting();
-            return view('templates/header') .
-                view('pages/bank-account', ['banks'=> $banks, 'setting' => $setting]) .
-                view('templates/footer');
+            $banks = $this->sePayService->getBanks();
+            $se_pay_setting = $this->sePayService->getSetting();
+            $va_accounts = [];
+            if(
+                !blank(app_get_data($se_pay_setting, 'bank_account_id', null))
+            ) {
+                $va_accounts = $this->sePayService->getSubAccount(app_get_data($se_pay_setting, 'rawdata.bank_setting.bank_account_id'));
+            }
+
+            return view('templates/header')
+                .view('pages/bank-account', [
+                    'banks'=> $banks,
+                    'va_accounts' => $va_accounts,
+                    'se_pay_setting' => $se_pay_setting
+                ]).view('templates/footer');
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
