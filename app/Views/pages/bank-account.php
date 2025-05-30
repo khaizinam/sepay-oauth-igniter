@@ -70,8 +70,11 @@
                     $('#va_account_id').html(res.data)
                 },
                 error: function(xhr, status, error) {
-                    // Handle AJAX error
-                    console.error('AJAX error:', status, error);
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.csrf_hash) {
+                            $('meta[name="csrf-token"]').attr('content', xhr.responseJSON.csrf_hash);
+                        }
+                    }
                 }
             });
         });

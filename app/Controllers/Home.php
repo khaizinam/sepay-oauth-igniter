@@ -85,4 +85,12 @@ class Home extends BaseController
             return $th->getMessage();
         }
     }
+
+    public function transactionsPage(){
+        $se_pay_setting = $this->sePayService->getSetting();
+
+        return view('templates/header') .
+            view('pages/transactions', ['se_pay_setting' => $se_pay_setting]) .
+            view('templates/footer');
+    }
 }

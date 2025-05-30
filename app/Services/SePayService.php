@@ -146,4 +146,17 @@ class SePayService
         ]);
         return $result;
     }
+
+    public function getTransactions($payload)
+    {
+        $setting = $this->getSetting();
+        $response = $this->client->request('GET',  $this->endpoint . 'api/v1/transactions', [
+            'headers' => [
+                'Authorization' => $this->getAuthorizationHeader($setting)
+            ],
+            'query' => $payload
+        ]);
+        $data = json_decode($response->getBody(), true);
+        return app_get_data($data, 'data');
+    }
 }

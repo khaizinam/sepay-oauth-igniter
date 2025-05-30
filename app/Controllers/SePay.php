@@ -95,4 +95,32 @@ class SePay extends BaseController
             return redirect()->back()->with('success', 'Failed to update bank account.');
         }
     }
+
+    public function getTransactions()
+    {
+        try {
+            // Set the script execution time limit to unlimited
+            set_time_limit(0);
+            if($this->request->isAJAX() == false || $this->request->getHeaderLine('X-Requested-With') !== 'XMLHttpRequest') {
+                throw new Exception('This method only supports AJAX requests');
+            }
+            $payload = $this->request->getPost();
+            $data = $this->sePayService->getTransactions($payload);
+            
+            return $this->response->setJSON([
+                'error' => false,
+                'message' => 'Transaction retrieved successfully',
+                'data' => $data,
+                'csrf_hash' => csrf_hash()
+            ]);
+        } catch (\Throwable $th) {
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getMessage());
+            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getTraceAsString());
+            return $this->response->setStatusCode(500)->setJSON([
+                'error' => true,
+                'message' => $th->getMessage(),
+                'csrf_hash' => csrf_hash()
+            ]);
+        }
+    }
 }
