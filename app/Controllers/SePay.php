@@ -153,12 +153,15 @@ class SePay extends BaseController
             }
 
             $model->insert($data);
+            return $this->response->setJSON([
+                'error' => false,
+                'message' => 'success',
+            ]);
         } catch (\Throwable $th) {
             app_log_error(__CLASS__, __FUNCTION__, $th);
             return $this->response->setStatusCode(500)->setJSON([
                 'error' => true,
                 'message' => $th->getMessage(),
-                'csrf_hash' => csrf_hash()
             ]);
         }
     }
