@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\OauthModel;
+use App\Models\SePayTransaction;
 use App\Models\SePayWebhook;
 use App\Services\SePayService;
 
@@ -17,9 +18,18 @@ class Home extends BaseController
 
     public function index()
     {
-        return view('templates/header') .
-            view('pages/index') .
-            view('templates/footer');
+        try {
+              $model = new SePayTransaction();
+            $transactions = $model->paginate(20);
+            return view('templates/header') .
+                view('pages/index', [
+                    'transactions' => $transactions,
+                ]) .
+                view('templates/footer');
+        } catch (\Throwable $th) {
+            app_log_error(__CLASS__, __FUNCTION__, $th);
+            return $th->getMessage();
+        }
     }
 
     public function success()
