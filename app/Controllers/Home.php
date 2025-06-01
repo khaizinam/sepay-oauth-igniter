@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\OauthModel;
+use App\Models\SePayWebhook;
 use App\Services\SePayService;
 
 class Home extends BaseController
@@ -29,11 +30,53 @@ class Home extends BaseController
     }
 
     public function settingPage(){
+        $setting = $this->sePayService->getSetting();
+        return view('templates/header') .
+            view('pages/setting', ['setting' => $setting]) .
+            view('templates/footer');
+    }
+
+    public function webhookPage(){
         try {
-            $setting = $this->sePayService->getSetting();
+            $webhookModel = new SePayWebhook();
+            $webhooks = $webhookModel->paginate(20); // 20 items per page
+            $pager = $webhookModel->pager;
+            return view('templates/header').
+            view('pages/webhook/index',[
+                'webhooks'=> $webhooks,
+                'pager' => $pager
+            ]).
+            view('templates/footer');
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
+
+    public function createWebhookPage(){
+        try {
+            $banks = $this->sePayService->getBanks();
+            $se_pay_setting = $this->sePayService->getSetting();
             return view('templates/header') .
-                view('pages/setting', ['setting' => $setting]) .
-                view('templates/footer');
+            view('pages/webhook/create', [
+                'banks'=> $banks,
+                'se_pay_setting' => $se_pay_setting
+            ]) .
+            view('templates/footer');
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
+
+    public function editWebhookPage($id){
+        try {
+            $banks = $this->sePayService->getBanks();
+            $se_pay_setting = $this->sePayService->getSetting();
+            return view('templates/header') .
+            view('pages/webhook/edit', [
+                'banks'=> $banks,
+                'se_pay_setting' => $se_pay_setting
+            ]) .
+            view('templates/footer');
         } catch (\Throwable $th) {
             return $th->getMessage();
         }

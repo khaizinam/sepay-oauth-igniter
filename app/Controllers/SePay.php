@@ -71,7 +71,7 @@ class SePay extends BaseController
                 'csrf_hash' => csrf_hash()
             ]);
         } catch (\Throwable $th) {
-            log_message('error',__CLASS__ . '@' . __FUNCTION__, ['error' => $th->getMessage(), 'trace' => $th->getTraceAsString()]);
+            app_log_error(__CLASS__, __FUNCTION__, $th);
             return $this->response->setStatusCode(500)->setJSON([
                 'error' => true,
                 'message' => $th->getMessage(),
@@ -90,8 +90,7 @@ class SePay extends BaseController
             $result = $this->sePayService->updateBankAccount($data);
             return redirect()->back()->with('success', 'Bank account updated successfully');
         } catch (\Throwable $th) {
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getMessage());
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getTraceAsString());
+            app_log_error(__CLASS__, __FUNCTION__, $th);
             return redirect()->back()->with('success', 'Failed to update bank account.');
         }
     }
@@ -114,8 +113,7 @@ class SePay extends BaseController
                 'csrf_hash' => csrf_hash()
             ]);
         } catch (\Throwable $th) {
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getMessage());
-            log_message('error', __CLASS__ . '@' . __FUNCTION__ . ' : ' . $th->getTraceAsString());
+            app_log_error(__CLASS__, __FUNCTION__, $th);
             return $this->response->setStatusCode(500)->setJSON([
                 'error' => true,
                 'message' => $th->getMessage(),

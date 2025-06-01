@@ -109,3 +109,10 @@ if (!function_exists('app_get_data')) {
         return $data;
     }
 }
+
+if(!function_exists('app_log_error')) {
+    function app_log_error($class, $func_nm , $exception){
+        log_message('error', $class . '@' . $func_nm . ': ' . $exception->getMessage());
+        log_message('error', $class . '@' . $func_nm . ': ' . $exception->getTraceAsString());
+    }
+}
