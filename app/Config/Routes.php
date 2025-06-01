@@ -32,4 +32,4 @@ $routes->get('/api/v1/se-pay/webhooks/list', 'SePay::getWebooks');
 $routes->get('/api/v1/se-pay/webhooks/(:segment)', 'SePay::getWebookDetail/$1');
 $routes->post('/api/v1/se-pay/webhooks/store', 'SePay::createNewWebhook');
 $routes->post('/api/v1/se-pay/webhooks/(:segment)/update', 'SePay::updateWebhook/$1');
-$routes->get('/api/v1/se-pay/webhooks/(:segment)/delete', 'SePay::deleteWebhook');
+$routes->get('/api/v1/se-pay/webhooks/(:segment)/delete', 'SePay::deleteWebhook/$1');

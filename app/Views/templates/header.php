@@ -40,8 +40,8 @@
 <body>
     <div class="sidebar">
         <h5 class="text-white text-center">Menu</h5>
-        <a href="/">Dashboard</a>
-        <a href="<?= base_url('home') ?>">Access token</a>
+        <a href="<?= base_url('home') ?>">Dashboard</a>
+        <a href="<?= base_url('setting') ?>">Access token</a>
         <a href="<?= base_url('bank-account') ?>">Bank accounts</a>
         <a href="<?= base_url('transactions') ?>">Transactions</a>
         <a href="<?= base_url('webhooks') ?>">Webhooks</a>

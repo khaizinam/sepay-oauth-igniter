@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\OauthModel;
+use App\Models\SePayWebhook;
 use App\Services\SePayService;
 use Exception;
 
@@ -119,6 +120,75 @@ class SePay extends BaseController
                 'message' => $th->getMessage(),
                 'csrf_hash' => csrf_hash()
             ]);
+        }
+    }
+
+    public function createNewWebhook(){
+        try {
+            $payload = $this->request->getPost();
+            log_message('error', json_encode($payload, JSON_PRETTY_PRINT));
+            $prepareData = [
+                "bank_account_id" => app_get_data($payload, 'bank_account_id'),
+                "name" => app_get_data($payload, 'name'),
+                "event_type" => app_get_data($payload, 'event_type'),
+                "authen_type" => 'No_Authen',
+                "webhook_url" => app_get_data($payload, 'webhook_url'),
+                "is_verify_payment" => app_get_data($payload, 'is_verify_payment', 0),
+                "skip_if_no_code" => app_get_data($payload, 'skip_if_no_code', 1),
+                "active" => app_get_data($payload, 'active', 1),
+                "only_va" => 0,
+                "request_content_type" => "Json",
+            ];
+            $res = $this->sePayService->createNewWebhook($prepareData);
+            $model = new SePayWebhook();
+            $model->insert([
+                ...$prepareData,
+                'webhook_id' => app_get_data($res, 'id')
+            ]);
+            return redirect()->route('webhooks')->with('success', 'Create webhooks success.');
+        } catch (\Throwable $th) {
+            app_log_error(__CLASS__, __FUNCTION__, $th);
+            return redirect()->route('webhooks')->with('error', 'Create webhooks fail.');
+        }
+    }
+
+    public function updateWebhook($id){
+         try {
+            $model = new SePayWebhook();
+            $webhook = $model->where('id', $id)->first();
+            $payload = $this->request->getPost();
+            log_message('error', json_encode($payload, JSON_PRETTY_PRINT));
+            $prepareData = [
+                "bank_account_id" => app_get_data($payload, 'bank_account_id'),
+                "name" => app_get_data($payload, 'name'),
+                "event_type" => app_get_data($payload, 'event_type'),
+                "authen_type" => 'No_Authen',
+                "webhook_url" => app_get_data($payload, 'webhook_url'),
+                "is_verify_payment" => app_get_data($payload, 'is_verify_payment', 0),
+                "skip_if_no_code" => app_get_data($payload, 'skip_if_no_code', 1),
+                "active" => app_get_data($payload, 'active', 1),
+                "only_va" => 0,
+                "request_content_type" => "Json",
+            ];
+            $res = $this->sePayService->updateWebhook(app_get_data($webhook, 'webhook_id'), $prepareData);
+            $model->update($id, $prepareData);
+            return redirect()->route('webhooks')->with('success', 'Update webhooks success.');
+        } catch (\Throwable $th) {
+            app_log_error(__CLASS__, __FUNCTION__, $th);
+            return redirect()->route('webhooks')->with('error', 'Update webhooks fail.');
+        }
+    }
+
+    public function deleteWebhook($id) {
+        try {
+            $model = new SePayWebhook();
+            $webhook = $model->where('id', $id)->first();
+            $this->sePayService->deleteWebhook(app_get_data($webhook, 'webhook_id'));
+            $model->delete($id);
+            return redirect()->route('webhooks')->with('success', 'Delete webhooks fail.');
+        } catch (\Throwable $th) {
+            app_log_error(__CLASS__, __FUNCTION__, $th);
+            return redirect()->route('webhooks')->with('error', 'Delete webhooks fail.');
         }
     }
 }

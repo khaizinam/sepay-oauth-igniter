@@ -69,12 +69,13 @@ class Home extends BaseController
 
     public function editWebhookPage($id){
         try {
+            $model = new SePayWebhook();
+            $webhook = $model->where('id', $id)->first();
             $banks = $this->sePayService->getBanks();
-            $se_pay_setting = $this->sePayService->getSetting();
             return view('templates/header') .
             view('pages/webhook/edit', [
-                'banks'=> $banks,
-                'se_pay_setting' => $se_pay_setting
+                'webhook'=> $webhook,
+                'banks' => $banks
             ]) .
             view('templates/footer');
         } catch (\Throwable $th) {

@@ -15,6 +15,12 @@ class CreateTableConnection extends Migration
                 'unsigned' => true,
                 'auto_increment' => true
             ],
+            'webhook_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
+                'unsigned' => true,
+                'null' => false,
+            ],
             'bank_account_id' => [
                 'type' => 'INT',
                 'constraint' => 11,

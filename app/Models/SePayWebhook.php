@@ -9,6 +9,7 @@ class SePayWebhook extends Model {
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
+        'webhook_id',
         'bank_account_id',
         'name',
         'event_type',

@@ -210,7 +210,7 @@ class SePayService
      */
     public function createNewWebhook($payload){
         $setting = $this->getSetting();
-        $response = $this->client->request('POST',  $this->endpoint . '/api/v1/webhooks', [
+        $response = $this->client->request('POST',  $this->endpoint . 'api/v1/webhooks', [
             'headers' => [
                 'Authorization' => $this->getAuthorizationHeader($setting),
                 'Content-Type' => 'application/json'
@@ -245,7 +245,7 @@ class SePayService
      */
     public function updateWebhook($wh_id, $payload){
         $setting = $this->getSetting();
-        $response = $this->client->request("PATCH",  $this->endpoint . '/api/v1/webhooks/' . $wh_id, [
+        $response = $this->client->request("PATCH",  $this->endpoint . 'api/v1/webhooks/' . $wh_id, [
             'headers' => [
                 'Authorization' => $this->getAuthorizationHeader($setting),
                 'Content-Type' => 'application/json'
@@ -281,7 +281,7 @@ class SePayService
      */
     public function deleteWebhook($wh_id){
         $setting = $this->getSetting();
-        $response = $this->client->request('DELETE',  $this->endpoint . '/api/v1/webhooks/' . $wh_id, [
+        $response = $this->client->request('DELETE',  $this->endpoint . 'api/v1/webhooks/' . $wh_id, [
             'headers' => [
                 'Authorization' => $this->getAuthorizationHeader($setting),
             ]
