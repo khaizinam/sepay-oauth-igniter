@@ -126,7 +126,7 @@ class SePay extends BaseController
 
     public function leadgen(){
         try {
-            $leadgen = $this->request->getPost();
+            $leadgen = $this->request->getJSON(true);
             
             log_message('error', json_encode($leadgen, JSON_PRETTY_PRINT));
             
