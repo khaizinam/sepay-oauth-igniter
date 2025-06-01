@@ -170,7 +170,7 @@ class SePay extends BaseController
                 "only_va" => 0,
                 "request_content_type" => "Json",
             ];
-            $res = $this->sePayService->updateWebhook(app_get_data($webhook, 'webhook_id'), $prepareData);
+            $this->sePayService->updateWebhook(app_get_data($webhook, 'webhook_id'), $prepareData);
             $model->update($id, $prepareData);
             return redirect()->route('webhooks')->with('success', 'Update webhooks success.');
         } catch (\Throwable $th) {
