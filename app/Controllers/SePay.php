@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\OauthModel;
+use App\Models\SePayTransaction;
 use App\Models\SePayWebhook;
 use App\Services\SePayService;
 use Exception;
@@ -113,6 +114,45 @@ class SePay extends BaseController
                 'data' => $data,
                 'csrf_hash' => csrf_hash()
             ]);
+        } catch (\Throwable $th) {
+            app_log_error(__CLASS__, __FUNCTION__, $th);
+            return $this->response->setStatusCode(500)->setJSON([
+                'error' => true,
+                'message' => $th->getMessage(),
+                'csrf_hash' => csrf_hash()
+            ]);
+        }
+    }
+
+    public function leadgen(){
+        try {
+            $leadgen = $this->request->getPost();
+            
+            log_message('error', json_encode($leadgen, JSON_PRETTY_PRINT));
+            
+            $model = new SePayTransaction();
+
+            $data = [
+                'transaction_id' => app_get_data($leadgen, 'id'),
+                'account_number' => app_get_data($leadgen, 'accountNumber'),
+                'bank_brand_name' => app_get_data($leadgen, 'gateway'),
+                'transaction_date' => app_get_data($leadgen, 'transactionDate'),
+                'amount_out' => 0,
+                'amount_in' => 0,
+                'accumulated' => app_get_data($leadgen, 'accumulated'),
+                'transaction_content' => app_get_data($leadgen, 'content'),
+                'reference_number' => app_get_data($leadgen, 'referenceCode'),
+                'code' => app_get_data($leadgen, 'code'),
+                'sub_account' => app_get_data($leadgen, 'subAccount'),
+            ];
+
+            if(app_get_data($leadgen, 'transferType') == 'in'){
+                $data['amount_in'] = app_get_data($leadgen, 'transferAmount');
+            } else {
+                $data['amount_out'] = app_get_data($leadgen, 'transferAmount');
+            }
+
+            $model->insert($data);
         } catch (\Throwable $th) {
             app_log_error(__CLASS__, __FUNCTION__, $th);
             return $this->response->setStatusCode(500)->setJSON([
