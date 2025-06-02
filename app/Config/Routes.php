@@ -3,6 +3,7 @@
  * PAGES WEB
  */
 $routes->get('/', 'Home::index');
+$routes->get('/test', 'Home::test');
 $routes->get('/setting', 'Home::settingPage');
 $routes->get('/webhooks', 'Home::webhookPage');
 $routes->get('/webhooks/create', 'Home::createWebhookPage');

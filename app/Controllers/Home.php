@@ -32,6 +32,19 @@ class Home extends BaseController
         }
     }
 
+    public function test(){
+        $db      = \Config\Database::connect();
+        $query = 'SELECT ao.name, ao.description FROM app_oauths as ao WHERE ao.name LIKE '.$db->escape("%Tích hợp%") . ';';
+        $result = $db->query($query);
+        echo $query;
+        echo '<br>';
+        foreach ($result->getResult() as $row) {
+            echo $row->name;
+            echo '<br>';
+        }
+        return 123;
+    }
+
     public function success()
     {
         return view('templates/header') .
