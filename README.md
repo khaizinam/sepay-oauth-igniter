@@ -16,3 +16,6 @@ chmod 664 var/.htaccess var/themes_repository/.htaccess
 chmod 644 design/index.php images/index.php
 
 chmod 664 var/index.php var/themes_repository/index.php
+
+php spark serve --port 8080
+ngrok http --url=gibbon-stunning-uniformly.ngrok-free.app 8080

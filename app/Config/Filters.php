@@ -38,6 +38,8 @@ class Filters extends BaseConfig
             'csrf' => [
                 'except' => [
                     'api/v1/se-pay/webhooks/leadgen',
+                    'gateway',
+                    'gateway/*'
                 ]
             ]
             // 'invalidchars',

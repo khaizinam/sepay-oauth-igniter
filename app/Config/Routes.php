@@ -34,3 +34,13 @@ $routes->get('/api/v1/se-pay/webhooks/(:segment)', 'SePay::getWebookDetail/$1');
 $routes->post('/api/v1/se-pay/webhooks/store', 'SePay::createNewWebhook');
 $routes->post('/api/v1/se-pay/webhooks/(:segment)/update', 'SePay::updateWebhook/$1');
 $routes->get('/api/v1/se-pay/webhooks/(:segment)/delete', 'SePay::deleteWebhook/$1');
+
+/**
+ * GATE WAY
+ */
+$routes->get('tunel', 'Tunel::index');
+$routes->get('tunel/create', 'Tunel::create');
+$routes->post('tunel/store', 'Tunel::store');
+$routes->get('/gateway', 'Gateway::index');
+$routes->get('gateway/(:segment)', 'Gateway::info/$1');
+$routes->post('/gateway/(:segment)', 'Gateway::tunel/$1');

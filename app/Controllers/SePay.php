@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Models\OauthModel;
 use App\Models\SePayTransaction;
 use App\Models\SePayWebhook;
 use App\Services\SePayService;

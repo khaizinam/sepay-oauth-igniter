@@ -19,7 +19,7 @@ class Home extends BaseController
     public function index()
     {
         try {
-              $model = new SePayTransaction();
+            $model = new SePayTransaction();
             $transactions = $model->paginate(20);
             return view('templates/header') .
                 view('pages/index', [
