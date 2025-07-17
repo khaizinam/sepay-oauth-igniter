@@ -44,6 +44,8 @@ $routes->post('tunel/store', 'Tunel::store');
 $routes->get('tunel/edit/(:segment)', 'Tunel::edit/$1');
 $routes->post('tunel/update/(:segment)', 'Tunel::update/$1');
 $routes->post('tunel/delete/(:segment)', 'Tunel::delete/$1');
+$routes->get('hook/reload/(:segment)', 'Tunel::hookReload/$1');
+$routes->get('hook/delete/(:segment)', 'Tunel::hookDelete/$1');
 
 $routes->get('/gateway', 'Gateway::index');
 $routes->get('gateway/(:segment)', 'Gateway::info/$1');

@@ -2,24 +2,42 @@
 
 namespace App\Controllers;
 
+use App\Models\AppDomainHookModel;
 use App\Models\DomainModel;
+use App\Services\GatewayService;
 
 class Tunel extends BaseController
 {
-    protected $tunelModel;
+    protected DomainModel $tunelModel;
+
+    protected GatewayService $gatewayService;
 
     public function __construct()
     {
         $this->tunelModel = new DomainModel();
+        $this->gatewayService = new GatewayService();
     }
 
     public function index()
     {
-        $data['domains'] = $this->tunelModel->findAll();
+        $perPage = 20;
+
+        $domains = $this->tunelModel->paginate($perPage);
+        $pager = \Config\Services::pager();
+
+        $hookModel = new AppDomainHookModel();
+        $latestHooks = $hookModel
+            ->orderBy('created_at', 'DESC')
+            ->limit(5)
+            ->find();
 
         return view('templates/header') .
-               view('pages/tunel/index', $data) .
-               view('templates/footer');
+            view('pages/tunel/index', [
+                'domains' => $domains,
+                'pager' => $pager,
+                'latestHooks' => $latestHooks,
+            ]) .
+            view('templates/footer');
     }
 
     public function create()
@@ -54,9 +72,24 @@ class Tunel extends BaseController
             return redirect()->to('/tunel')->with('error', 'Tunnel không tồn tại.');
         }
 
-        return view('templates/header') .
-            view('pages/tunel/edit', ['domain' => $domain]) .
-            view('templates/footer');
+        $hookModel = new \App\Models\AppDomainHookModel();
+
+        $perPage = 20;
+
+        $hooks = $hookModel
+            ->where('domain_id', $id)
+            ->orderBy('created_at', 'DESC')
+            ->paginate($perPage, 'hooks');
+
+        $pager = $hookModel->pager;
+
+        return view('templates/header')
+            . view('pages/tunel/edit', [
+                'domain'      => $domain,
+                'hooks'       => $hooks,
+                'pager'       => $pager,
+            ])
+            . view('templates/footer');
     }
 
     public function update($id)
@@ -80,5 +113,23 @@ class Tunel extends BaseController
         }
 
         return redirect()->to('/tunel')->with('success', 'Đã xoá tunnel.');
+    }
+
+    public function hookReload($id)
+    {
+        $result = $this->gatewayService->sendWebhookAgain($id);
+       
+        if (!$result['success']) {
+            return redirect()->back()->with('error', 'Gửi lại thất bại: ' . $result['error']);
+        }
+
+        return redirect()->back()->with('success', 'Đã gửi lại webhook. HTTP: ' . $result['http_code']);
+    }
+
+    public function hookDelete($id)
+    {
+        $model = new \App\Models\AppDomainHookModel();
+        $model->delete($id);
+        return redirect()->back()->with('success', 'Đã xoá bản ghi.');
     }
 }
