@@ -41,6 +41,10 @@ $routes->get('/api/v1/se-pay/webhooks/(:segment)/delete', 'SePay::deleteWebhook/
 $routes->get('tunel', 'Tunel::index');
 $routes->get('tunel/create', 'Tunel::create');
 $routes->post('tunel/store', 'Tunel::store');
+$routes->get('tunel/edit/(:segment)', 'Tunel::edit/$1');
+$routes->post('tunel/update/(:segment)', 'Tunel::update/$1');
+$routes->post('tunel/delete/(:segment)', 'Tunel::delete/$1');
+
 $routes->get('/gateway', 'Gateway::index');
 $routes->get('gateway/(:segment)', 'Gateway::info/$1');
 $routes->post('/gateway/(:segment)', 'Gateway::tunel/$1');
