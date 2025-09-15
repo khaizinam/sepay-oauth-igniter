@@ -160,4 +160,21 @@ class Home extends BaseController
             view('pages/transactions', ['se_pay_setting' => $se_pay_setting]) .
             view('templates/footer');
     }
+
+    public function getCsrf(){
+        try {
+            // $url = $this->request->getGet('url');
+            return $this->response->setJSON([
+                'error' => false,
+                'message' => 'success',
+                'csrf_hash' => csrf_hash()
+            ]);
+        } catch (\Throwable $th) {
+            return $this->response->setStatusCode(500)->setJSON([
+                'error' => true,
+                'message' => $th->getMessage(),
+                'csrf_hash' => csrf_hash()
+            ]);
+        }
+    }
 }

@@ -47,8 +47,25 @@
             toast.show();
         });
     </script>
-    
-    
     <script src="<?= base_url('public/assets/build/js/app.js') ?>"></script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url: '/ajax-get-csrf',
+                method: 'GET',
+                success: function(data){
+                    $('meta[name="csrf-token"]').attr('content', data.csrf_hash);
+                    $('form').each(function() {
+                        const self = $(this);
+                        console.log(self);
+                        let csrf_dom = self?.find('input[name="csrf_test_name"]');
+                        if(csrf_dom.length == 0){
+                            self.append(`<input type="hidden" name="csrf_test_name" value="${data.csrf_hash}">`);
+                        }
+                    })
+                }
+            });
+        })
+    </script>
 </body>
 </html>

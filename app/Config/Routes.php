@@ -6,6 +6,8 @@ $routes->get('/', 'Home::index');
 $routes->get('/test', 'Home::test');
 $routes->get('/setting', 'Home::settingPage');
 $routes->get('/webhooks', 'Home::webhookPage');
+$routes->get('/ajax-get-csrf', 'Home::getCsrf');
+
 $routes->get('/webhooks/create', 'Home::createWebhookPage');
 $routes->get('/webhooks/(:segment)/edit', 'Home::editWebhookPage/$1');
 $routes->get('/bank-account', 'Home::bankAccountPage');

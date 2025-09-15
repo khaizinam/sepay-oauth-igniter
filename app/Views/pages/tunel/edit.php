@@ -7,8 +7,6 @@
         <?php endif; ?>
 
         <form action="<?= base_url('tunel/update/' . $domain['id']) ?>" method="post">
-            <?= csrf_field() ?>
-
             <div class="form-group mb-2">
                 <label for="id">ID (Không thay đổi)</label>
                 <input type="text" id="id" class="form-control" value="<?= esc($domain['id']) ?>" disabled>
