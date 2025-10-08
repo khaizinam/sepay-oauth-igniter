@@ -42,7 +42,12 @@ class Kint extends BaseConfig
     */
     public string $richTheme = 'aante-light.css';
     public bool $richFolder  = false;
-    public int $richSort     = AbstractRenderer::SORT_FULL;
+    // Use Kint's SORT_FULL when available. Kint is a dev dependency and may
+    // not be installed in production; avoid referencing the class constant
+    // directly to prevent a fatal error. The numeric value 2 corresponds to
+    // Kint's SORT_FULL in Kint v6.x. If you install kint-php/kint, this can
+    // be changed back to AbstractRenderer::SORT_FULL.
+    public int $richSort     = 2;
 
     /**
      * @var array<string, class-string<ValuePluginInterface>>|null
