@@ -52,6 +52,9 @@ class Tunel extends BaseController
         $data = [
             'key' => $this->request->getPost('key'),
             'url' => $this->request->getPost('url'),
+            'description' => $this->request->getPost('description'),
+            'method' => $this->request->getPost('method') ?: 'POST',
+            'status' => $this->request->getPost('status') ?: 'active',
         ];
 
         if ($this->tunelModel->where('key', $data['key'])->countAllResults() > 0) {
@@ -97,6 +100,9 @@ class Tunel extends BaseController
         $data = [
             'key' => $this->request->getPost('key'),
             'url' => $this->request->getPost('url'),
+            'description' => $this->request->getPost('description'),
+            'method' => $this->request->getPost('method'),
+            'status' => $this->request->getPost('status'),
         ];
 
         if (!$this->tunelModel->update($id, $data)) {

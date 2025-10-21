@@ -49,6 +49,17 @@ $routes->post('tunel/delete/(:segment)', 'Tunel::delete/$1');
 $routes->get('hook/reload/(:segment)', 'Tunel::hookReload/$1');
 $routes->get('hook/delete/(:segment)', 'Tunel::hookDelete/$1');
 
+/**
+ * GATEWAY API - Tunnel Routes (All HTTP Methods)
+ */
 $routes->get('/gateway', 'Gateway::index');
-$routes->get('gateway/(:segment)', 'Gateway::info/$1');
-$routes->post('/gateway/(:segment)', 'Gateway::tunel/$1');
+$routes->get('/gateway/(:segment)', 'Gateway::tunnel/$1');      // GET tunnel
+$routes->post('/gateway/(:segment)', 'Gateway::tunnel/$1');     // POST tunnel
+$routes->put('/gateway/(:segment)', 'Gateway::tunnel/$1');      // PUT tunnel
+$routes->delete('/gateway/(:segment)', 'Gateway::tunnel/$1');   // DELETE tunnel
+$routes->patch('/gateway/(:segment)', 'Gateway::tunnel/$1');    // PATCH tunnel
+
+/**
+ * GATEWAY INFO API - Domain Information
+ */
+$routes->get('/api/gateway/info/(:segment)', 'Gateway::info/$1');  // Get domain info

@@ -15,7 +15,10 @@ class DomainModel extends Model
 
     protected $allowedFields    = [
         'key',
-        'url'
+        'url',
+        'description',
+        'method',
+        'status'
     ];
 
     protected $useTimestamps    = true;

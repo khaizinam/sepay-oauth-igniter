@@ -1,0 +1,241 @@
+=== DỰ ÁN LOCAL TUNNEL - WEBHOOK GATEWAY ===
+
+## TỔNG QUAN DỰ ÁN
+Đây là một hệ thống Local Tunnel Gateway được xây dựng bằng CodeIgniter 4 (PHP) để hook data từ web thật qua ngrok, sau đó chuyển data về các local app để đọc và xử lý.
+
+## KIẾN TRÚC HỆ THỐNG
+
+### Luồng hoạt động chính:
+1. **Webhook từ web thật** → **ngrok tunnel** → **Gateway Controller**
+2. **Gateway nhận data** → **chuyển tiếp đến local app** → **lưu history vào database**
+3. **Tự động tạo prompt files** từ webhook data để phân tích và xử lý
+
+### Cấu trúc thư mục:
+```
+/var/www/tunnel.code/public_html/
+├── app/
+│   ├── Controllers/
+│   │   ├── Gateway.php          # Xử lý webhook từ ngrok
+│   │   ├── Tunel.php           # Quản lý tunnel domains
+│   │   ├── Home.php            # Trang chủ và dashboard
+│   │   └── SePay.php           # Xử lý SePay webhooks
+│   ├── Models/
+│   │   ├── DomainModel.php     # Quản lý tunnel domains
+│   │   ├── AppDomainHookModel.php # Lưu trữ webhook history
+│   │   └── SePayWebhook.php    # SePay webhook model
+│   ├── Services/
+│   │   ├── GatewayService.php  # Core service xử lý HTTP requests
+│   │   └── SePayService.php    # SePay integration service
+│   └── Views/
+│       ├── pages/tunel/        # Giao diện quản lý tunnel
+│       └── templates/          # Layout templates
+├── prompts/                    # Thư mục chứa prompt files
+└── public/                     # Web root
+```
+
+## CHỨC NĂNG CHÍNH
+
+### 1. TUNNEL MANAGEMENT (/tunel)
+- **Tạo tunnel mới**: Định nghĩa key, URL đích, description, method và status
+- **Quản lý domains**: CRUD operations cho tunnel domains với giao diện hiện đại
+- **Xem lịch sử webhook**: Theo dõi các webhook đã nhận với thống kê trực quan
+- **Gửi lại webhook**: Retry failed webhooks
+- **Copy webhook URL**: Tính năng copy URL webhook nhanh chóng
+- **Status management**: Quản lý trạng thái active/inactive/maintenance
+
+### 2. GATEWAY SERVICE (/gateway)
+- **GET /gateway/:domainKey**: Lấy thông tin domain theo key
+- **POST /gateway/:domainKey**: Chuyển tiếp webhook data đến local app
+- **Multi-method support**: Hỗ trợ GET, POST, PUT, DELETE, PATCH
+- **Status checking**: Kiểm tra trạng thái active/inactive/maintenance
+- **Tự động logging**: Lưu tất cả requests và responses
+- **Smart error handling**: Xử lý lỗi và logging chi tiết
+
+### 3. WEBHOOK PROCESSING
+```php
+// Luồng xử lý webhook:
+1. Nhận request từ ngrok
+2. Xác định domain key và lấy thông tin domain
+3. Kiểm tra trạng thái active/inactive/maintenance
+4. Lấy HTTP method từ domain config
+5. Forward headers và body đến local app với method tương ứng
+6. Lưu request/response vào database
+7. Trả về response với status code phù hợp
+```
+
+## DATABASE SCHEMA
+
+### app_domains
+- `id`: Primary key
+- `key`: Unique tunnel key (ví dụ: "myapp", "webhook1")
+- `url`: Target URL của local app
+- `description`: Mô tả ngắn về tunnel (TEXT, tối đa 500 ký tự)
+- `method`: HTTP method (ENUM: GET, POST, PUT, DELETE, PATCH, default: POST)
+- `status`: Trạng thái hoạt động (ENUM: active, inactive, maintenance, default: active)
+- `created_at`, `updated_at`: Timestamps
+
+### app_domain_hooks
+- `id`: Primary key
+- `domain_id`: Foreign key đến app_domains
+- `data`: Raw webhook data (JSON/string)
+- `headers`: HTTP headers (JSON)
+- `response_body`: Response từ local app
+- `status_code`: HTTP status code
+- `created_at`, `updated_at`: Timestamps
+
+## API ENDPOINTS
+
+### Gateway API
+```
+GET  /gateway                    # List all domain keys
+GET  /gateway/:domainKey         # Get detailed domain info with statistics
+POST /gateway/:domainKey         # Forward webhook data
+```
+
+#### GET /gateway/:domainKey Response Example:
+```json
+{
+  "domain": {
+    "id": 1,
+    "key": "moodle",
+    "url": "http://localhost:3000/webhook",
+    "description": "Moodle webhook endpoint",
+    "method": "POST",
+    "status": "active",
+    "created_at": "2025-01-08 10:00:00",
+    "updated_at": "2025-01-08 12:00:00",
+    "webhook_url": "https://your-domain.ngrok-free.app/gateway/moodle"
+  },
+  "statistics": {
+    "total_hooks": 150,
+    "status_breakdown": {
+      "success": 120,
+      "client_error": 25,
+      "server_error": 5
+    },
+    "last_5_hooks": [
+      {
+        "id": 145,
+        "status_code": 200,
+        "created_at": "2025-01-08 14:30:00",
+        "data_preview": "{\"event\":\"user_created\",\"data\":{...}}"
+      }
+    ]
+  },
+  "status": {
+    "is_active": true,
+    "service_available": true
+  }
+}
+```
+
+### Tunnel Management
+```
+GET  /tunel                      # List all tunnels
+GET  /tunel/create               # Create tunnel form
+POST /tunel/store                # Save new tunnel
+GET  /tunel/edit/:id             # Edit tunnel form
+POST /tunel/update/:id           # Update tunnel
+POST /tunel/delete/:id           # Delete tunnel
+```
+
+### Webhook Management
+```
+GET  /hook/reload/:id            # Retry webhook
+GET  /hook/delete/:id            # Delete webhook record
+```
+
+## CÁCH SỬ DỤNG
+
+### 1. Setup ngrok tunnel:
+```bash
+# Chạy local server
+php spark serve --port 8080
+
+# Tạo ngrok tunnel
+ngrok http --url=gibbon-stunning-uniformly.ngrok-free.app 8080
+```
+
+### 2. Tạo tunnel domain:
+1. Truy cập `/tunel/create`
+2. Nhập key (ví dụ: "myapp")
+3. Chọn HTTP method (GET, POST, PUT, DELETE, PATCH)
+4. Nhập URL đích (ví dụ: "http://localhost:3000/webhook")
+5. Thêm mô tả (tùy chọn, tối đa 500 ký tự)
+6. Chọn trạng thái (active, inactive, maintenance)
+
+### 3. Configure webhook từ web thật:
+- URL: `https://gibbon-stunning-uniformly.ngrok-free.app/gateway/myapp`
+- Method: POST
+- Headers: Tự động forward (trừ Host)
+
+### 4. Xem kết quả:
+- Dashboard: `/tunel` - Xem danh sách tunnels với thống kê trực quan, status badges, và copy URL
+- Webhook details: `/tunel/edit/:id` - Xem chi tiết webhooks với modal popup, edit form hiện đại
+- Prompt files: Tự động tạo trong thư mục `/prompts`
+- Giao diện hiện đại: Bootstrap 5 với Font Awesome icons, gradient sidebar, responsive design
+
+## TÍNH NĂNG ĐẶC BIỆT
+
+### Auto Prompt Generation
+- Tự động tạo prompt files từ webhook data
+- Phân tích JSON data và tạo gợi ý xử lý
+- Lưu trữ trong thư mục `/prompts` với format `.prompt`
+- Bao gồm headers, data, response và AI suggestions
+
+### SePay Integration
+- Tích hợp với SePay payment system
+- OAuth callback handling
+- Webhook processing cho payment events
+- Bank account management
+
+### Real-time Monitoring
+- Logging chi tiết tất cả requests
+- Error tracking và debugging
+- Webhook retry mechanism
+- Response status monitoring
+- Modal popup để xem chi tiết headers, data, response
+- Status code color coding (2xx=green, 4xx=yellow, 5xx=red)
+
+## CÔNG NGHỆ SỬ DỤNG
+- **Backend**: PHP 8+ với CodeIgniter 4
+- **Database**: MySQL/MariaDB
+- **Tunnel**: ngrok
+- **Frontend**: Bootstrap 5 + jQuery + Font Awesome 6.4
+- **Real-time**: Socket.io (optional)
+
+## CÁCH MỞ RỘNG
+
+### Thêm tính năng mới:
+1. Tạo Controller mới trong `app/Controllers/`
+2. Thêm routes trong `app/Config/Routes.php`
+3. Tạo Models nếu cần database operations
+4. Tạo Services cho business logic
+5. Tạo Views cho giao diện
+
+### Tích hợp external services:
+- Sử dụng pattern tương tự SePay integration
+- Tạo Service class riêng cho mỗi service
+- Implement webhook handlers
+- Add database models cho data storage
+
+## TROUBLESHOOTING
+
+### Lỗi thường gặp:
+1. **Domain key không tồn tại**: Kiểm tra database app_domains
+2. **Local app không nhận được data**: Kiểm tra URL và firewall
+3. **ngrok connection failed**: Restart ngrok tunnel
+4. **Database connection error**: Kiểm tra config database
+
+### Debug tips:
+- Xem logs trong `writable/logs/`
+- Kiểm tra webhook history trong database
+- Sử dụng retry function để test lại
+- Monitor ngrok dashboard cho connection status
+
+## SECURITY CONSIDERATIONS
+- Domain keys nên là unique và khó đoán
+- Validate input data trước khi forward
+- Implement rate limiting cho webhook endpoints
+- Log tất cả activities để audit
+- Sử dụng HTTPS cho ngrok tunnel
